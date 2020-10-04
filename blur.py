@@ -62,20 +62,18 @@ def gaussFilter(img, kernel):
   return filtered
   
 # filter a given image using a Sobel operator
-def filterImageSobel(img, kernel):
-  Mx = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]
-  My = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
-  gradient = np.zeros((img.size[0], img.size[1]))
+def sobelFilter(img):
+  Mx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+  My = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+  imageMx = gaussFilter(img, Mx)
+  imageMy = gaussFilter(img, My)
+  
+  Gx = np.power(imageMx, 2)
+  Gy = np.power(imageMy, 2)
 
-  for i in range(img.size[0]):
-    for j in range(img.size[1]):
-      print(Mx)
-      print(My)
-      print(img[i:i+2, j:j+2])
-      print(Mx*img[i:i+2, j:j+2])
-      Gx = sum(Mx*img[i:i+2, j:j+2])
-      Gy = sum(My*img[i:i+2, j:j+2])
+  # print(Gx, Gy)
+  grad = np.sqrt(Gx + Gy)
+  print(grad)
 
-      gradient[i+1, j+1] = sqrt(Gx^2 + Gy^2)
-  return gradient
+  return grad
 

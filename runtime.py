@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from blur import gauss2D, filterImageSobel, read_image, gaussFilter
+from blur import gauss2D, sobelFilter, read_image, gaussFilter
 from matplotlib import pyplot as plt
 std = 3
 kernel = gauss2D(std)
@@ -27,4 +27,9 @@ plt.imshow(gaussian_filter_img)
 plt.show()
 # plt.savefig('3.pn5g')
 print('Image shape', gaussian_filter_img.shape)
-# img = filterImageSobel(image, kernel)
+# img = sobelFilter(image, kernel)
+
+sobel_filter_img = sobelFilter(gaussian_filter_img)
+plt.imshow(sobel_filter_img)
+plt.show()
+print('Image shape', sobel_filter_img.shape)
