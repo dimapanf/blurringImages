@@ -9,9 +9,9 @@ def read_image(path, as_float=True):
     img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     if as_float:
         # Typically easier to work with when range is [0.0, 1.0]
-        return image / 255.0
+        return img_gray / 255.0
     
-    return image
+    return img_gray
 
 # Build a 2D gaussian matrix 
 def gauss2D(std):
@@ -25,6 +25,42 @@ def gauss2D(std):
           kernel[i][j] = 1.0 / (2 * np.pi * std ** 2) * np.exp(-(x ** 2 + y ** 2) / (2.0 * std ** 2))
   return kernel
 
+# gaussian filter
+def gaussFilter(img, kernel):
+  blurred = np.zeros((img.shape[0], img.shape[1]))
+  klength = kernel.shape[0]
+  kheight = kernel.shape[1]
+
+  # pad the image with 0s so we can perform a full blur
+  img = np.pad(img, (klength-1,kheight-1), mode='constant')
+
+  ilength = img.shape[0]
+  iheight = img.shape[1]
+
+  # we cannot start in the top right corner as our filter only begins where the kernel can fit
+  i = klength // 2
+  j = kheight // 2
+
+  # Result image
+  filtered = np.zeros([ilength, iheight])
+
+  #no need to process pixels that will have purely 0s
+  while i < ilength - klength // 2:
+    while j < iheight - kheight // 2:
+      
+      # Build up the same dimensions of image pixels so we can perform a kernel img multiply
+      toFilter = img[i-klength//2 : i + 1+klength//2, j - kheight//2 : j + 1+kheight //2]
+      intro = np.multiply(toFilter, kernel)
+
+      # WARNING: POTENTIALLY NEED TO DIVIDE???
+      filtered[i][j] = np.sum(intro)
+      j+=1
+    i+=1
+
+    # Must reset the j with every incrementation of i
+    j = kheight // 2
+  return filtered
+  
 # filter a given image using a Sobel operator
 def filterImageSobel(img, kernel):
   Mx = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]
