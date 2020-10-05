@@ -1,13 +1,13 @@
 import numpy as np
 import cv2
-from blur import gauss2D, sobelFilter, read_image, gaussFilter
+from blur import gauss2D, sobelFilter, read_image, gaussFilter, thresholdCalc
 from matplotlib import pyplot as plt
 std = 3
 kernel = gauss2D(std)
 # print(kernel)
 print(np.shape(kernel))
 print(np.sum(kernel))
-image = read_image('image.png')
+image = read_image('gates.png')
 
 #print original greyscale image
 plt.imshow(image)
@@ -33,3 +33,8 @@ sobel_filter_img = sobelFilter(gaussian_filter_img)
 plt.imshow(sobel_filter_img)
 plt.show()
 print('Image shape', sobel_filter_img.shape)
+
+thresh_image = thresholdCalc(sobel_filter_img)
+plt.imshow(thresh_image)
+plt.show()
+print('Image shape', thresh_image.shape)
