@@ -82,9 +82,7 @@ def initial_threshold(grad_img):
   denominator = grad_img.shape[0]*grad_img.shape[1]
   return numerator/denominator
 
-def thresholdCalc(grad_img):
-  tiLast = initial_threshold(grad_img)
-  epsilon = 1
+def temp(grad_img, tiLast):
   lowerClass = []
   upperClass = []
   for i in range(grad_img.shape[0]):
@@ -97,23 +95,23 @@ def thresholdCalc(grad_img):
   mL = np.sum(lowerClass)/len(lowerClass)
   mH = np.sum(upperClass)/len(upperClass)
   ti = (mL + mH)/2
+  return ti
+
+def thresholdCalc(grad_img):
+  epsilon = 0.0001
+  output = grad_img.copy()
+  tiLast = initial_threshold(grad_img)
+  ti = temp(grad_img, tiLast)
+  
   while abs(ti - tiLast) > epsilon:
-    for i in range(grad_img.shape[0]):
-      for j in range(grad_img.shape[1]):
-        p = grad_img[i][j]
-        if p < ti:
-          lowerClass.append(p)
-        else:
-          upperClass.append(p)
-    mL = np.sum(lowerClass)/len(lowerClass)
-    mH = np.sum(upperClass)/len(upperClass)
-    ti = (mL + mH)/2
+    tiLast = ti
+    ti = temp(grad_img, tiLast)
 
   for i in range(grad_img.shape[0]):
     for j in range(grad_img.shape[1]):
       p = grad_img[i][j]
       if p < ti:
-        grad_img[i][j] = 0
+        output[i][j] = 0
       else:
-        grad_img[i][j] = 255
-  return grad_img
+        output[i][j] = 255
+  return output
