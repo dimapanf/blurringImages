@@ -15,7 +15,7 @@ def read_image(path, as_float=True):
 
 # Build a 2D gaussian matrix 
 def gauss2D(std):
-  krad = int(3 * std)
+  krad = int(1 * std)
   ksize = 2 * krad + 1
   kernel = np.zeros((ksize, ksize))
   for i in range(ksize):
@@ -27,7 +27,6 @@ def gauss2D(std):
 
 # gaussian filter
 def gaussFilter(img, kernel):
-  blurred = np.zeros((img.shape[0], img.shape[1]))
   klength = kernel.shape[0]
   kheight = kernel.shape[1]
 
@@ -59,8 +58,10 @@ def gaussFilter(img, kernel):
 
     # Must reset the j with every incrementation of i
     j = kheight // 2
-  return filtered
   
+  # remove the borders of image
+  return filtered[klength-1:img.shape[0]-klength+1, kheight-1:img.shape[1]-kheight+1]
+
 # filter a given image using a Sobel operator
 def sobelFilter(img):
   Mx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
@@ -71,11 +72,7 @@ def sobelFilter(img):
   Gx = np.power(imageMx, 2)
   Gy = np.power(imageMy, 2)
 
-  # print(Gx, Gy)
-  grad = np.sqrt(Gx + Gy)
-  print(grad)
-
-  return grad
+  return np.sqrt(Gx + Gy)
 
 def initial_threshold(grad_img):
   numerator = np.sum(grad_img)
@@ -94,8 +91,9 @@ def temp(grad_img, tiLast):
         upperClass.append(p)
   mL = np.sum(lowerClass)/len(lowerClass)
   mH = np.sum(upperClass)/len(upperClass)
-  ti = (mL + mH)/2
-  return ti
+
+  # return ti
+  return (mL + mH)/2
 
 def thresholdCalc(grad_img):
   epsilon = 0.0001
@@ -115,3 +113,27 @@ def thresholdCalc(grad_img):
       else:
         output[i][j] = 255
   return output
+
+def connected_labeling(img):
+  labeled_img = np.zeros((img.shape[0], img.shape[1]))
+  queue = []
+  curr_label = 1
+  for i in range(img.shape[0]):
+    for j in range(img.shape[1]):
+      # print(img[i][j])
+      if img[i][j] == 255 and labeled_img[i][j] < 1:
+        labeled_img[i][j] = curr_label
+        queue.append((i, j))
+        while len(queue) > 0:
+          popped = queue[0]
+          queue = queue[1:]
+          for k in range(-1,2):
+            for l in range(-1,2):
+              print(curr_label)
+              if -1 < popped[0]+k < img.shape[0] and -1 < popped[1]+l < img.shape[1]:
+                if img[popped[0] + k][popped[1] + l] == 255 and labeled_img[popped[0] + k][popped[1] + l] < 1:
+                  print(1)
+                  labeled_img[popped[0] + k][popped[1] + l] = curr_label
+                  queue.append((popped[0]+k, popped[1]+l))
+        curr_label += 1
+  return curr_label
