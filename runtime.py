@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from blur import gauss2D, sobelFilter, read_image, gaussFilter, thresholdCalc, connected_labeling
+from blur import gauss2D, sobelFilter, read_image, filterImg, thresholdCalc, connected_labeling
 from matplotlib import pyplot as plt
 std = 3
 kernel = gauss2D(std)
@@ -13,7 +13,7 @@ plt.imshow(image, cmap='gray')
 plt.show()
 print('Image shape', image.shape)
 
-gaussian_filter_img = gaussFilter(image,kernel)
+gaussian_filter_img = filterImg(image,kernel)
 print("Step 2: \nThis is the image with a gaussian blur applied to it")
 plt.imshow(gaussian_filter_img, cmap='gray')
 plt.show()
@@ -46,13 +46,12 @@ hard to understand for an average user who just sees the image after the thresho
 
 image2 = read_image('Q6.png')
 thresh_image = thresholdCalc(image2)
+print("Q6: \nThis is the image with the threshold algorithm applied")
 plt.imshow(thresh_image, cmap='gray')
 plt.show()
 print('The image dimensions are:', thresh_image.shape)
 ans = connected_labeling(thresh_image)
-print(ans)
-thresh_image = thresholdCalc(ans)
-
+print("The amount of cells in the image provided is: ", ans)
 
 # Q6: Discuss your results and explain how one can improve the estimation.
 
